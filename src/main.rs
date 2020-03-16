@@ -177,7 +177,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         println!("原文: {}", q);
         print!("翻译: ");
-        for item in resp.transla'tion.unwrap() {
+        for item in resp.translation.unwrap() {
             println!("{}", item);
         }
     }
