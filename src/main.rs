@@ -162,14 +162,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         q.push(' ');
     }
     let mut data: HashMap<String, String> = HashMap::new();
-    data.insert("q".to_string(), q.clone());
+    data.insert("q".to_owned(), q.to_owned());
     let mut qry = gen_qry(&mut data);
     qry.insert_str(0, YOUDAO_URL);
     // println!("{}", qry);
     let resp: FyResp = match reqwest::blocking::get(qry.as_str())?
         .json() {
         Ok(resp) => resp,
-        Err(_) => FyResp { errorCode: String::from("17005"), query: Some(q.clone()), translation: None },
+        Err(_) => FyResp { errorCode: String::from("17005"), query: Some(q.to_owned()), translation: None },
     };
     let err_code = resp.errorCode.as_str();
     if err_map.contains_key(err_code) {
@@ -208,15 +208,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn gen_qry(data: &mut HashMap<String, String>) -> String {
     let now = SystemTime::now();
-    data.insert("from".to_string(), "auto".to_string());
-    data.insert("to".to_string(), "auto".to_string());
-    data.insert("appKey".to_string(), APP_KEY.to_string());
-    data.insert("salt".to_string(), now.duration_since(UNIX_EPOCH).unwrap().as_nanos().to_string());
-    data.insert("signType".to_string(), "v3".to_string());
-    data.insert("curtime".to_string(), now.duration_since(UNIX_EPOCH).unwrap().as_secs().to_string());
+    data.insert("from".to_owned(), "auto".to_owned());
+    data.insert("to".to_owned(), "auto".to_owned());
+    data.insert("appKey".to_owned(), APP_KEY.to_owned());
+    data.insert("salt".to_owned(), now.duration_since(UNIX_EPOCH).unwrap().as_nanos().to_string());
+    data.insert("signType".to_owned(), "v3".to_owned());
+    data.insert("curtime".to_owned(), now.duration_since(UNIX_EPOCH).unwrap().as_secs().to_string());
     let mut m = Sha256::new();
     m.input_str(sign_str(data).as_str());
-    data.insert("sign".to_string(), m.result_str());
+    data.insert("sign".to_owned(), m.result_str());
     return query_str(data);
 }
 
@@ -235,7 +235,7 @@ fn input(q: &str) -> String {
     let chs = q.chars();
     let l = chs.count();
     if l <= 20 {
-        q.to_string()
+        q.to_owned()
     } else {
         // chs[(l - 10)..l];
         let v: Vec<char> = q.chars().collect();
@@ -267,21 +267,21 @@ fn query_str(data: &mut HashMap<String, String>) -> String {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use crate::{sign_str, APP_SECRET};
+    use crate::{sign_str, APP_SECRET} ;
 
     #[test]
     fn test_sign_str() {
         let mut map:HashMap<String, String> = HashMap::new();
-        map.insert("appKey".to_string(), "a".to_string());
-        map.insert("q".to_string(), "b".to_string());
-        map.insert("salt".to_string(), "c".to_string());
-        map.insert("curtime".to_string(), "d".to_string());
+        map.insert("appKey".to_owned(), "a".to_owned());
+        map.insert("q".to_owned(), "b".to_owned());
+        map.insert("salt".to_owned(), "c".to_owned());
+        map.insert("curtime".to_owned(), "d".to_owned());
         let res = sign_str(&mut map);
         let mut t = String::from("abcd");
         t.push_str(APP_SECRET);
         assert_eq!(t, res);
 
-        map.insert("q".to_string(), "123456789axxx一二三四五六七八九十".to_string());
+        map.insert("q".to_owned(), "123456789axxx一二三四五六七八九十".to_owned());
 
         let res = sign_str(&mut map);
         let mut t = String::from("a123456789a23一二三四五六七八九十cd");
