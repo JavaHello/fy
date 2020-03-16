@@ -173,7 +173,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let err_code = resp.errorCode.as_str();
     if err_map.contains_key(err_code) {
-        println!("{}", err_map.get(err_code).unwrap());
+        println!("{}", err_map.get(err_code).unwrap_or(&"未知错误"));
     } else {
         println!("原文: {}", q);
         print!("翻译: ");
