@@ -1,0 +1,13 @@
+[package]
+name = "fy"
+version = "0.1.0"
+authors = ["kaiv2"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rust-crypto = "0.2.36"
+reqwest = {version="0.10.4", features = ["blocking", "json"] }
+actix-web = "2.0"
+serde = "1.0.104"
