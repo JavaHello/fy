@@ -267,28 +267,25 @@ fn query_str(data: &mut HashMap<String, String>) -> String {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
+    use crate::{sign_str, APP_SECRET};
 
     #[test]
-    fn testHashMap() {
-        let mut map = HashMap::new();
-        map.insert("a", "1");
-        for item in map.iter() {
-            println!("key = {}, value = {}", item.0, item.1);
-        }
-        let t = "中文abc";
-        let s = t.chars().count();
-        println!("{}", t.len());
-        println!("{}", s);
-        println!("{}", &t[0..3]);
-    }
+    fn test_sign_str() {
+        let mut map:HashMap<String, String> = HashMap::new();
+        map.insert("appKey".to_string(), "a".to_string());
+        map.insert("q".to_string(), "b".to_string());
+        map.insert("salt".to_string(), "c".to_string());
+        map.insert("curtime".to_string(), "d".to_string());
+        let res = sign_str(&mut map);
+        let mut t = String::from("abcd");
+        t.push_str(APP_SECRET);
+        assert_eq!(t, res);
 
-    #[test]
-    fn testP() {
-        let mut a = [0, 0, 3, 4, 5, 6];
-        println!("{}", a.iter().position(|&x| x > 1).unwrap());
-        let mut chs = "你好呀，abc123456789".chars();
-        let mut v: Vec<char> = chs.collect();
-        println!("{}", v[0]);
-        println!("{}", v[1]);
+        map.insert("q".to_string(), "123456789axxx一二三四五六七八九十".to_string());
+
+        let res = sign_str(&mut map);
+        let mut t = String::from("a123456789a23一二三四五六七八九十cd");
+        t.push_str(APP_SECRET);
+        assert_eq!(t, res);
     }
 }
