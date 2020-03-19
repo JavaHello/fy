@@ -147,7 +147,8 @@ fn init_error_map() -> HashMap<&'static str, &'static str> {
 #[derive(Deserialize)]
 #[derive(Debug)]
 struct FyResp {
-    errorCode: String,
+    #[serde(rename = "errorCode")]
+    error_code: String,
     query: Option<String>,
     translation: Option<Vec<String>>,
 }
@@ -169,9 +170,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let resp: FyResp = match reqwest::blocking::get(qry.as_str())?
         .json() {
         Ok(resp) => resp,
-        Err(_) => FyResp { errorCode: String::from("17005"), query: Some(q.to_owned()), translation: None },
+        Err(_) => FyResp { error_code: String::from("17005"), query: Some(q.to_owned()), translation: None },
     };
-    let err_code = resp.errorCode.as_str();
+    let err_code = resp.error_code.as_str();
     if err_map.contains_key(err_code) {
         println!("{}", err_map.get(err_code).unwrap_or(&"未知错误"));
     } else {
