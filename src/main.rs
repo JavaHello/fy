@@ -163,13 +163,12 @@ struct Paraphrase {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let err_map = init_error_map();
-    let mut arg_list = env::args();
-    &arg_list.next();
-    let mut q = String::new();
-    for it in arg_list {
-        q.push_str(&it);
-        q.push(' ');
+    let arg_list:Vec<String> = env::args().collect();
+    if arg_list.len() < 2 {
+        return Ok(());
     }
+    let arg_list = &arg_list[1..arg_list.len()];
+    let q = arg_list.join(" ");
     let mut data: HashMap<String, String> = HashMap::new();
     data.insert("q".to_owned(), q.to_owned());
     let mut qry = gen_qry(&mut data);
