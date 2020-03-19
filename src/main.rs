@@ -192,7 +192,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if resp.paraphrase_list.is_some() {
             println!("释义:");
             for item in resp.paraphrase_list.unwrap() {
-                print!("\t{}: ", item.key);
+                print!("    {}: ", item.key);
                 match item.value {
                   Some(e) => {
                       println!("{}", e.join(", "));
