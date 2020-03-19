@@ -151,6 +151,14 @@ struct FyResp {
     error_code: String,
     query: Option<String>,
     translation: Option<Vec<String>>,
+    #[serde(rename = "web")]
+    paraphrase_list: Option<Vec<Paraphrase>>,
+}
+
+#[derive(Deserialize, Debug)]
+struct Paraphrase {
+    key: String,
+    value: Option<Vec<String>>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -170,7 +178,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let resp: FyResp = match reqwest::blocking::get(qry.as_str())?
         .json() {
         Ok(resp) => resp,
-        Err(_) => FyResp { error_code: String::from("17005"), query: Some(q.to_owned()), translation: None },
+        Err(_) => FyResp { error_code: String::from("17005"), query: Some(q.to_owned()), translation: None, paraphrase_list: None },
     };
     let err_code = resp.error_code.as_str();
     if err_map.contains_key(err_code) {
@@ -180,6 +188,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         print!("翻译: ");
         for item in resp.translation.unwrap() {
             println!("{}", item);
+        }
+        if resp.paraphrase_list.is_some() {
+            println!("释义:");
+            for item in resp.paraphrase_list.unwrap() {
+                print!("\t{}: ", item.key);
+                match item.value {
+                  Some(e) => {
+                      println!("{}", e.join(", "));
+                  },
+                    None =>()
+                };
+            }
         }
     }
     Ok(())
