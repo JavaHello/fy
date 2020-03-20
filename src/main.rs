@@ -167,7 +167,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if arg_list.len() < 2 {
         return Ok(());
     }
-    let arg_list = &arg_list[1..arg_list.len()];
+    let arg_list = &arg_list[1..];
     let q = arg_list.join(" ");
     let mut data: HashMap<String, String> = HashMap::new();
     data.insert("q".to_owned(), q.to_owned());
