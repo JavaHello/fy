@@ -9,9 +9,9 @@ use crypto::sha2::Sha256;
 extern crate lazy_static;
 use serde::Deserialize;
 
-const APP_KEY: &'static str = "";
-const APP_SECRET: &'static str = "";
-const YOUDAO_URL: &'static str = "https://openapi.youdao.com/api?";
+const APP_KEY: &str = "";
+const APP_SECRET: &str = "";
+const YOUDAO_URL: &str = "https://openapi.youdao.com/api?";
 
 lazy_static! {
     static ref ERROR_CODE: HashMap<&'static str, &'static str> = {
@@ -197,7 +197,10 @@ impl Fy for YouDaoFy {
     type Resp = FyResp;
     fn fy(&mut self, content: &str) -> FyResp {
         let qry_url = self.gen_qry(content);
-        let resp: FyResp = match reqwest::blocking::get(&qry_url).unwrap().json() {
+        let resp: FyResp = match reqwest::blocking::get(&qry_url)
+            .expect("连接服务器失败...")
+            .json()
+        {
             Ok(resp) => resp,
             Err(_) => FyResp {
                 error_code: String::from("17005"),
@@ -306,10 +309,10 @@ impl YouDaoFy {
     }
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
     let arg_list: Vec<String> = env::args().collect();
     if arg_list.len() < 2 {
-        return Ok(());
+        return;
     }
     let arg_list = &arg_list[1..];
     let q = arg_list.join(" ");
@@ -337,7 +340,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     }
-    Ok(())
 }
 
 #[cfg(test)]
