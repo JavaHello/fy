@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::env;
+use std::io::{self, Read};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crypto::digest::Digest;
@@ -311,13 +312,23 @@ impl YouDaoFy {
 
 fn main() {
     let arg_list: Vec<String> = env::args().collect();
-    if arg_list.len() < 2 {
-        return;
+    if arg_list.len() > 1 {
+        let arg_list = &arg_list[1..];
+        let q = arg_list.join(" ");
+        youdao_fy(&q);
+    } else {
+        let mut stdin = io::stdin();
+        let mut q = String::new();
+        if let Ok(n) = stdin.read_to_string(&mut q) {
+            if n > 0 && q != "\n" {
+                let q = q.replace("\n", " ");
+                youdao_fy(&q);
+            }
+        }
     }
-    let arg_list = &arg_list[1..];
-    let q = arg_list.join(" ");
-    // println!("{}", qry);
-    let resp: FyResp = YouDaoFy::new().fy(&q);
+}
+fn youdao_fy(q: &str) {
+    let resp: FyResp = YouDaoFy::new().fy(q);
     let err_code = resp.error_code.as_str();
     if ERROR_CODE.contains_key(err_code) {
         println!("{}", ERROR_CODE.get(err_code).unwrap_or(&"未知错误"));
